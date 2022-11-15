@@ -7,6 +7,7 @@ between api and the app, split them by requests: Base, Login, Registering (might
 """
 
 from pydantic import BaseModel
+from typing import Literal
 
 
 class UserBase(BaseModel):
@@ -33,7 +34,7 @@ class User(UserBase):
 
 class UserResponseBase(BaseModel):
 
-    status: str
+    status: Literal["success", "fail"]
 
 class UserResponseError(UserResponseBase):
 
