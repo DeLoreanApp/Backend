@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>DeLorian - API docs</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="https://fastapi.tiangolo.com/img/favicon.png">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <style data-styled="" data-styled-version="4.4.1"></style>
+</head>
+<body>
+    <div id="redoc-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/redoc/bundles/redoc.standalone.js"> </script>
+    <script>
+        var spec = {"openapi": "3.0.2", "info": {"title": "FastAPI", "version": "0.1.0"}, "paths": {"/login": {"post": {"summary": "Login", "operationId": "login_login_post", "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/UserLogin"}}}, "required": true}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"title": "Response Login Login Post", "anyOf": [{"$ref": "#/components/schemas/UserResponseSuccess"}, {"$ref": "#/components/schemas/UserResponseError"}]}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}, "/register": {"post": {"summary": "Register", "operationId": "register_register_post", "requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/UserRegister"}}}, "required": true}, "responses": {"200": {"description": "Successful Response", "content": {"application/json": {"schema": {"title": "Response Register Register Post", "anyOf": [{"$ref": "#/components/schemas/UserResponseSuccess"}, {"$ref": "#/components/schemas/UserResponseError"}]}}}}, "422": {"description": "Validation Error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HTTPValidationError"}}}}}}}}, "components": {"schemas": {"HTTPValidationError": {"title": "HTTPValidationError", "type": "object", "properties": {"detail": {"title": "Detail", "type": "array", "items": {"$ref": "#/components/schemas/ValidationError"}}}}, "User": {"title": "User", "required": ["username", "email", "id"], "type": "object", "properties": {"username": {"title": "Username", "type": "string"}, "email": {"title": "Email", "type": "string"}, "id": {"title": "Id", "type": "integer"}}}, "UserLogin": {"title": "UserLogin", "required": ["email_or_username", "password"], "type": "object", "properties": {"email_or_username": {"title": "Email Or Username", "type": "string"}, "password": {"title": "Password", "type": "string"}}}, "UserRegister": {"title": "UserRegister", "required": ["username", "email", "password"], "type": "object", "properties": {"username": {"title": "Username", "type": "string"}, "email": {"title": "Email", "type": "string"}, "password": {"title": "Password", "type": "string"}}}, "UserResponseError": {"title": "UserResponseError", "required": ["status", "error"], "type": "object", "properties": {"status": {"title": "Status", "enum": ["fail"], "type": "string"}, "error": {"title": "Error", "type": "string"}}}, "UserResponseSuccess": {"title": "UserResponseSuccess", "required": ["status", "data"], "type": "object", "properties": {"status": {"title": "Status", "enum": ["success"], "type": "string"}, "data": {"$ref": "#/components/schemas/User"}}}, "ValidationError": {"title": "ValidationError", "required": ["loc", "msg", "type"], "type": "object", "properties": {"loc": {"title": "Location", "type": "array", "items": {"anyOf": [{"type": "string"}, {"type": "integer"}]}}, "msg": {"title": "Message", "type": "string"}, "type": {"title": "Error Type", "type": "string"}}}}}};
+        Redoc.init(spec, {}, document.getElementById("redoc-container"));
+    </script>
+</body>
+</html>
+
