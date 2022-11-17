@@ -11,35 +11,30 @@ from typing import Literal
 
 
 class UserBase(BaseModel):
-    pass
+    username: str
+    email: str
 
 
 class UserRegister(UserBase):
-    email: str
-    username: str
     password: str
 
-class UserLogin(UserBase):
+class UserLogin(BaseModel):
     email_or_username: str
     password: str
 
 
 class User(UserBase):
     id: int
-    username: str
-    email: str
 
     class Config:
         orm_mode = True
 
-class UserResponseBase(BaseModel):
+class UserResponseError(BaseModel):
 
-    status: Literal["success", "fail"]
-
-class UserResponseError(UserResponseBase):
-
+    status: Literal["fail"]
     error: str
 
-class UserResponseSuccess(UserResponseBase):
+class UserResponseSuccess(BaseModel):
 
+    status: Literal["success"]
     data: User

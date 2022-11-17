@@ -35,6 +35,6 @@ async def register(user: s_user.UserRegister, db: Session = Depends(get_db)):
     if not m_user.get_user_by_username(db, user.username):
         u = m_user.create_user(db, user)
         return s_user.UserResponseSuccess(status="success", data=u)
-    return s_user.UserResponseError(status="fall", error="User already exists")
+    return s_user.UserResponseError(status="fail", error="User already exists")
 
 
