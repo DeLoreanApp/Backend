@@ -6,7 +6,7 @@ For instance, you receive a login request where we have a username and password 
 between api and the app, split them by requests: Base, Login, Registering (might be something else)
 """
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Literal
 
 
@@ -24,17 +24,20 @@ class UserLogin(BaseModel):
 
 
 class User(UserBase):
-    id: int
+
+    id: int = Field(..., alias="user_id")
 
     class Config:
         orm_mode = True
+        allow_population_by_field_name = True
+
 
 class UserResponseError(BaseModel):
 
-    status: Literal["fail"]
+    status: Literal["fail"] = "fail"
     error: str
 
 class UserResponseSuccess(BaseModel):
 
-    status: Literal["success"]
+    status: Literal["success"] = "success"
     data: User
