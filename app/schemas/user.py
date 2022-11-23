@@ -6,38 +6,32 @@ For instance, you receive a login request where we have a username and password 
 between api and the app, split them by requests: Base, Login, Registering (might be something else)
 """
 
-from pydantic import BaseModel, Field
-from typing import Literal
+from pydantic import BaseModel, Field, EmailStr
+from .monuments import Monument
 
 
-class UserBase(BaseModel):
+
+class UserRegister(BaseModel):
     username: str
-    email: str
-
-
-class UserRegister(UserBase):
+    email: EmailStr
     password: str
 
 class UserLogin(BaseModel):
     email_or_username: str
     password: str
 
-
-class User(UserBase):
+class UserMinimal(BaseModel):
 
     id: int = Field(..., alias="user_id")
+    score: int
+    profile_picture: bytes | None = Field(unicode_safe=False)
 
     class Config:
         orm_mode = True
         allow_population_by_field_name = True
 
+class UserFull(UserMinimal):
 
-class UserResponseError(BaseModel):
+    vitited_places: list[Monument] | None
 
-    status: Literal["fail"] = "fail"
-    error: str
 
-class UserResponseSuccess(BaseModel):
-
-    status: Literal["success"] = "success"
-    data: User

@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.dialects.sqlite import BLOB
 from sqlalchemy.orm import Session
 from bcrypt import hashpw, checkpw, gensalt
 
@@ -11,6 +12,8 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     username = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
+    score = Column(Integer, default=0)
+    picture = Column(BLOB)
 
 
 def get_user_by_id(db: Session, user_id: int) -> User | None:
@@ -46,3 +49,6 @@ def auth(db: Session, user) -> bool:
 
     return None
 
+def get_leader_board(db: Session) -> list[User]:
+
+    return db.query(User).filter().order_by(User.score.desc()).limit(30).all()
