@@ -23,6 +23,8 @@ class UserLogin(BaseModel):
 class UserMinimal(BaseModel):
 
     id: int = Field(..., alias="user_id")
+    username: str
+    email: EmailStr
     score: int
     profile_picture: bytes | None = Field(unicode_safe=False)
 

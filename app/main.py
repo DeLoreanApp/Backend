@@ -24,7 +24,7 @@ def get_db():
 
 
 class LoginResponse(BaseModel):
-    user: s_user.UserFull
+    user: s_user.UserMinimal
     leader_board: list[s_user.UserMinimal]
 
 class UResponse(ResponseSuccess):
