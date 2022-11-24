@@ -3,6 +3,7 @@ from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from dotenv import load_dotenv
+
 load_dotenv()
 
 from .models import user as m_user
@@ -17,6 +18,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI()
 app.include_router(users)
 
+
 def get_db():
     db = SessionLocal()
     try:
@@ -29,10 +31,17 @@ class LoginResponse(BaseModel):
     user: s_user.UserFull
     # leader_board: list[s_user.UserMinimal]
 
+
 class UResponse(ResponseSuccess):
     data: LoginResponse
 
-@app.post("/login", response_model=Union[UResponse, ResponseError], response_model_by_alias=True, tags=['user'])
+
+@app.post(
+    "/login",
+    response_model=Union[UResponse, ResponseError],
+    response_model_by_alias=True,
+    tags=["user"],
+)
 async def login(user: s_user.UserLogin, db: Session = Depends(get_db)):
 
     if user_db := m_user.auth(db, user):
@@ -43,8 +52,12 @@ async def login(user: s_user.UserLogin, db: Session = Depends(get_db)):
     return ResponseError(error="User doesn't exists or password is incorrect")
 
 
-
-@app.post("/register", response_model=Union[UResponse, ResponseError], response_model_by_alias=True, tags=["user"])
+@app.post(
+    "/register",
+    response_model=Union[UResponse, ResponseError],
+    response_model_by_alias=True,
+    tags=["user"],
+)
 async def register(user: s_user.UserRegister, db: Session = Depends(get_db)):
 
     if not m_user.get_user_by_username(db, user.username):
@@ -55,5 +68,3 @@ async def register(user: s_user.UserRegister, db: Session = Depends(get_db)):
         return ResponseSuccess(data=response)
 
     return ResponseError(error="User already exists")
-
-
