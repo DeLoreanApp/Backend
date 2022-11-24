@@ -5,6 +5,7 @@ from os import environ
 
 if db_url := environ.get("DATABASE_URL", None):
     DATABASE_URL = db_url
+    DATABASE_URL.replace("postgres", "postgresql")
     args = {}
 else:
     DATABASE_URL =  "sqlite:///./database.db"
