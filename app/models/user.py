@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String, LargeBinary
 from sqlalchemy.orm import Session
-from sqlalchemy.dialects.postgresql import BYTEA
 from bcrypt import hashpw, checkpw, gensalt
 
 from ..db import Base
@@ -13,7 +12,7 @@ class User(Base):
     username = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     score = Column(Integer, default=0)
-    picture = Column(BYTEA)
+    picture = Column(LargeBinary)
 
 
 def get_user_by_id(db: Session, user_id: int) -> User | None:
