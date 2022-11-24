@@ -3,3 +3,4 @@ pyproject.toml
 **/__pycache__
 database.db
 docs
+.env

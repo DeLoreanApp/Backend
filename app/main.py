@@ -2,6 +2,8 @@ from typing import Union
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
+from dotenv import load_dotenv
+load_dotenv()
 
 from .models import user as m_user
 from .models import monuments

@@ -16,6 +16,17 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
 
+      - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "delorian-api" #Must be unique in Heroku
+          heroku_email: "egor-evlampiev@mail.ru"
+
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: generate-docs
+
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
