@@ -13,6 +13,7 @@ from .schemas import user as s_user
 from .schemas.general import ResponseSuccess, ResponseError
 from .routers.user import users
 
+Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
