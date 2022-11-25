@@ -1,8 +1,10 @@
+from typing import Any
 from sqlalchemy import Column, Integer, String, LargeBinary
 from sqlalchemy.orm import Session
 from bcrypt import hashpw, checkpw, gensalt
 
 from ..db import Base
+
 
 class User(Base):
     __tablename__ = "users"
@@ -18,6 +20,7 @@ class User(Base):
 def get_user_by_id(db: Session, user_id: int) -> User | None:
     return db.query(User).filter(User.id == user_id).first()
 
+
 def get_user_by_username(db: Session, username) -> User | None:
 
     return db.query(User).filter(User.username == username).first()
@@ -32,7 +35,8 @@ def create_user(db: Session, user):
     db.refresh(db_user)
     return db_user
 
-def auth(db: Session, user) -> bool:
+
+def auth(db: Session, user) -> User | None:
 
     if "@" in user.email_or_username:
 
@@ -48,6 +52,33 @@ def auth(db: Session, user) -> bool:
 
     return None
 
+
 def get_leader_board(db: Session) -> list[User]:
 
     return db.query(User).filter().order_by(User.score.desc()).limit(30).all()
+
+def update_email(db: Session, user_id: int, email: str) -> User | None:
+
+    if user := db.query(User).filter(User.id == user_id).first():
+        user.email = email
+        db.commit()
+        db.refresh(user)
+        return user
+    return None
+
+def update_score(db: Session, user_id: int, score: int) -> User | None:
+
+    if user := db.query(User).filter(User.id == user_id).first():
+        user.score = score
+        db.commit()
+        db.refresh(user)
+        return user
+    return None
+
+# TODO: implement
+def update_picture(db: Session, user_id: int, picture: Any) -> User | None:
+    return None
+
+def insert_new_place(db: Session, user_id: int, place_id: int) -> User | None:
+
+    return None

@@ -1,19 +1,17 @@
-name: Generate documentation
+name: Deploy to Heroku
 on:
-  pull_request:
-    branches:
-      - '*'
   push:
-    branches:
-      - master
+    tags:
+      - 'release'
 
   workflow_dispatch:
     branches:
-      - master
+      - 'master'
 
 
 permissions:
   contents: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -26,28 +24,3 @@ jobs:
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "delorian-api" #Must be unique in Heroku
-          heroku_email: "egor-evlampiev@mail.ru"
-
-
-  generate-docs:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v3
-
-      - name: Setup python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-          cache: 'pip'
-
-      - name: Install and Build 🔧 # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
-        run: |
-          mkdir docs
-          pip install -r requirements.txt
-          python generate_docs.py
-
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: docs # The folder the action should deploy.

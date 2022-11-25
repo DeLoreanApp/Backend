@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class Monument(BaseModel):
 
     id: int
@@ -9,5 +10,3 @@ class Monument(BaseModel):
     lat: float
     lon: float
     description: str
-
-
