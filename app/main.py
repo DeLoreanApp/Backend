@@ -1,23 +1,16 @@
 from typing import Union
-from fastapi import FastAPI, Depends
+
+from fastapi import Depends
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
-from dotenv import load_dotenv
 
-load_dotenv()
 
-from .models import user as m_user
-from .models import monuments
-from .db import SessionLocal, engine, Base
-from .schemas import user as s_user
-from .schemas.general import ResponseSuccess, ResponseError
-from .routers.user import users
+from .setup_app import app
+from .schemas import UserRegister, UserLogin, UserResponse, ResponseError
+from .models import user as user_db
+from .db import SessionLocal
 
-Base.metadata.drop_all(bind=engine)
-Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
-app.include_router(users)
 
 
 def get_db():
@@ -28,44 +21,35 @@ def get_db():
         db.close()
 
 
-class LoginResponse(BaseModel):
-    user: s_user.UserFull
-    # leader_board: list[s_user.UserMinimal]
-
-
-class UResponse(ResponseSuccess):
-    data: LoginResponse
+@app.get("/", response_class=RedirectResponse, status_code=302, include_in_schema=False)
+def redirect_main_to_docs():
+    return "/docs"
 
 
 @app.post(
     "/login",
-    response_model=Union[UResponse, ResponseError],
+    response_model=Union[UserResponse, ResponseError],
     response_model_by_alias=True,
     tags=["user"],
 )
-async def login(user: s_user.UserLogin, db: Session = Depends(get_db)):
+def login(user: UserLogin, db: Session = Depends(get_db)):
 
-    if user_db := m_user.auth(db, user):
-        leader_board_db = m_user.get_leader_board(db)
-        response = LoginResponse(user=user_db, leader_board=leader_board_db)
-        return ResponseSuccess(data=response)
+    if user := user_db.auth(db, user):
+        return UserResponse(user=user)
 
     return ResponseError(error="User doesn't exists or password is incorrect")
 
 
 @app.post(
     "/register",
-    response_model=Union[UResponse, ResponseError],
+    response_model=Union[UserResponse, ResponseError],
     response_model_by_alias=True,
     tags=["user"],
 )
-async def register(user: s_user.UserRegister, db: Session = Depends(get_db)):
+def register(user: UserRegister, db: Session = Depends(get_db)):
 
-    if not m_user.get_user_by_username(db, user.username):
-
-        user_db = m_user.create_user(db, user)
-        leader_board_db = m_user.get_leader_board(db)
-        response = LoginResponse(user=user_db, leader_board=leader_board_db)
-        return ResponseSuccess(data=response)
+    if not user_db.get_user_by_username(db, user.username):
+        user = user_db.create_user(db, user)
+        return UserResponse(user=user)
 
     return ResponseError(error="User already exists")

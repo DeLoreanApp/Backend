@@ -6,7 +6,7 @@ from ..db import Base
 
 class Monument(Base):
 
-    __tablename__ = 'monuments'
+    __tablename__ = "monuments"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement="auto")
     name = Column(String, nullable=False)
@@ -15,4 +15,3 @@ class Monument(Base):
     lat = Column(Float, nullable=False)
     lon = Column(Float, nullable=False)
     description = Column(String, nullable=False)
-    # game

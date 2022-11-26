@@ -8,7 +8,7 @@ between api and the app, split them by requests: Base, Login, Registering (might
 
 from pydantic import BaseModel, Field, EmailStr
 from .monuments import Monument
-
+from .general import ResponseSuccess
 
 
 class UserRegister(BaseModel):
@@ -16,9 +16,11 @@ class UserRegister(BaseModel):
     email: EmailStr
     password: str
 
+
 class UserLogin(BaseModel):
     email_or_username: str
     password: str
+
 
 class UserMinimal(BaseModel):
 
@@ -32,8 +34,11 @@ class UserMinimal(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
 
+
 class UserFull(UserMinimal):
 
-    vitited_places: list[Monument] | None
+    last_vitited_monuments: list[Monument] | None = Field(default=None, max_items=10)
 
 
+class UserResponse(ResponseSuccess):
+    user: UserFull
