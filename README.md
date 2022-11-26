@@ -1,5 +1,6 @@
 # DeLorian API
-
+[![Generate documentation](https://github.com/DeLoreanApp/Backend/actions/workflows/docs.yml/badge.svg)](https://github.com/DeLoreanApp/Backend/actions/workflows/docs.yml)
+[![Deploy to Heroku](https://github.com/DeLoreanApp/Backend/actions/workflows/deploy.yml/badge.svg)](https://github.com/DeLoreanApp/Backend/actions/workflows/deploy.yml)
 
 # Documentation
 
