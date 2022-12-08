@@ -48,7 +48,7 @@ def auth(db: Session, user: UserLogin) -> User | None:
     if not user_db:
         return None
 
-    if checkpw(user.password.encode("utf8"), user_db.hashed_password):
+    if checkpw(user.password.encode("utf8"), user_db.hashed_password.encode("utf8")):
         return user_db
 
     return None
