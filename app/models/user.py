@@ -30,7 +30,7 @@ def get_user_by_username(db: Session, username) -> User | None:
 def create_user(db: Session, user: UserRegister):
 
     password = hashpw(user.password.encode("utf8"), gensalt())
-    db_user = User(email=user.email, hashed_password=password, username=user.username)
+    db_user = User(email=user.email, hashed_password=password.decode("utf8"), username=user.username)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -48,7 +48,7 @@ def auth(db: Session, user: UserLogin) -> User | None:
     if not user_db:
         return None
 
-    if checkpw(user.password.encode("utf8"), user_db.hashed_password.encode("utf8")):
+    if checkpw(user.password.encode("utf8"), user_db.hashed_password):
         return user_db
 
     return None
