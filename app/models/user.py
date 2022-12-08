@@ -2,6 +2,7 @@ from typing import Any
 from sqlalchemy import Column, Integer, String, LargeBinary
 from sqlalchemy.orm import Session
 from bcrypt import hashpw, checkpw, gensalt
+from ..schemas import UserLogin, UserRegister
 
 from ..db import Base
 
@@ -26,7 +27,7 @@ def get_user_by_username(db: Session, username) -> User | None:
     return db.query(User).filter(User.username == username).first()
 
 
-def create_user(db: Session, user):
+def create_user(db: Session, user: UserRegister):
 
     password = hashpw(user.password.encode("utf8"), gensalt())
     db_user = User(email=user.email, hashed_password=password, username=user.username)
@@ -36,7 +37,7 @@ def create_user(db: Session, user):
     return db_user
 
 
-def auth(db: Session, user) -> User | None:
+def auth(db: Session, user: UserLogin) -> User | None:
 
     if "@" in user.email_or_username:
 
@@ -47,7 +48,7 @@ def auth(db: Session, user) -> User | None:
     if not user_db:
         return None
 
-    if checkpw(user.password.encode("utf8"), user_db.hashed_password):
+    if checkpw(user.password.encode("utf8"), user_db.hashed_password.encode("utf8")):
         return user_db
 
     return None
