@@ -1,10 +1,37 @@
-from typing import Any
-from sqlalchemy import Column, Integer, String, LargeBinary
-from sqlalchemy.orm import Session
+from __future__ import annotations
+from typing import Any, Union
+from sqlalchemy import Column, Integer, String, LargeBinary, Float, ForeignKey, Table
+from sqlalchemy.orm import Session, relationship, Mapped
+from sqlalchemy.dialects import postgresql
 from bcrypt import hashpw, checkpw, gensalt
 from ..schemas import UserLogin, UserRegister
 
 from ..db import Base
+
+# from . import association_table, Monument
+
+association_table = Table(
+    "visited_places",
+    Base.metadata,
+    Column("user_id", ForeignKey("users.id"), primary_key=True),
+    Column("monument_id", ForeignKey("monuments.id"), primary_key=True),
+)
+
+
+class Monument(Base):
+
+    __tablename__ = "monuments"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement="auto")
+    name = Column(String, nullable=False)
+    city = Column(String, nullable=False)
+    country = Column(String, nullable=False)
+    lat = Column(Float, nullable=False)
+    lon = Column(Float, nullable=False)
+    description = Column(String, nullable=False)
+    visitors: Mapped[list[User]] = relationship(
+        "User", secondary=association_table, back_populates="visited"
+    )
 
 
 class User(Base):
@@ -16,9 +43,23 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     score = Column(Integer, default=0)
     picture = Column(LargeBinary)
+    visited: Mapped[list[Monument]] = relationship(
+        "Monument", secondary=association_table, back_populates="visitors"
+    )
+
+def get_user_monuments(db: Session, user_id: int) -> list[Monument] | None:
+
+    return db.query(Monument).join(association_table).filter(association_table.c.user_id == user_id).all()
 
 
-def get_user_by_id(db: Session, user_id: int) -> User | None:
+def get_user_by_id(db: Session, user_id: int) -> tuple[User, list[Monument]] | None:
+
+    user = db.query(User).filter(User.id == user_id).first()
+    monuments = get_user_monuments(db, user_id)
+
+    return user, monuments
+
+def check_user_by_id(db: Session, user_id: int) -> User | None:
     return db.query(User).filter(User.id == user_id).first()
 
 
@@ -79,6 +120,7 @@ def update_email(db: Session, user_id: int, email: str) -> User | None:
     return None
 
 
+
 def update_password(db: Session, user_id: int, password: str) -> User | None:
 
     hash_password = hashpw(password.encode("utf8"), gensalt())
@@ -87,6 +129,7 @@ def update_password(db: Session, user_id: int, password: str) -> User | None:
         db.commit()
         return user
     return None
+
 
 
 def update_score(db: Session, user_id: int, score: int) -> User | None:
@@ -104,6 +147,15 @@ def update_picture(db: Session, user_id: int, picture: Any) -> User | None:
     return None
 
 
-def insert_new_place(db: Session, user_id: int, place_id: int) -> User | None:
 
-    return None
+def insert_new_place(db: Session, user_id: int, place_id: int) -> tuple[User, list[Monument]] | None:
+
+    m = db.query(Monument).filter(Monument.id == place_id).first()
+
+    u = db.query(User).filter(User.id == user_id).first()
+    u.visited.append(m)
+    db.add(u)
+    db.commit()
+
+    return get_user_by_id(db, user_id)
+
