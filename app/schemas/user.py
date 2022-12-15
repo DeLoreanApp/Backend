@@ -9,7 +9,6 @@ between api and the app, split them by requests: Base, Login, Registering (might
 from pydantic import BaseModel, Field, EmailStr
 from .monuments import Monument, MonumentORM
 from .general import ResponseSuccess
-from typing import List
 
 
 class UserRegister(BaseModel):

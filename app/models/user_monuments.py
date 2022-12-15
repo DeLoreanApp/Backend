@@ -1,22 +1,38 @@
 from __future__ import annotations
-from typing import Any, Union
+from typing import Any
 from sqlalchemy import Column, Integer, String, LargeBinary, Float, ForeignKey, Table
 from sqlalchemy.orm import Session, relationship, Mapped
-from sqlalchemy.dialects import postgresql
 from bcrypt import hashpw, checkpw, gensalt
 from ..schemas import UserLogin, UserRegister
+from ..schemas.monuments import MonumentCreate
 
 from ..db import Base
 
-# from . import association_table, Monument
 
-association_table = Table(
+#  ██    ██ ██ ███████ ██ ████████ ███████ ██████      ██████  ██       █████   ██████ ███████ ███████
+#  ██    ██ ██ ██      ██    ██    ██      ██   ██     ██   ██ ██      ██   ██ ██      ██      ██
+#  ██    ██ ██ ███████ ██    ██    █████   ██   ██     ██████  ██      ███████ ██      █████   ███████
+#   ██  ██  ██      ██ ██    ██    ██      ██   ██     ██      ██      ██   ██ ██      ██           ██
+#    ████   ██ ███████ ██    ██    ███████ ██████      ██      ███████ ██   ██  ██████ ███████ ███████
+#
+#
+
+visited_places = Table(
     "visited_places",
     Base.metadata,
     Column("user_id", ForeignKey("users.id"), primary_key=True),
     Column("monument_id", ForeignKey("monuments.id"), primary_key=True),
 )
 
+
+
+#  ███    ███  ██████  ███    ██ ██    ██ ███    ███ ███████ ███    ██ ████████
+#  ████  ████ ██    ██ ████   ██ ██    ██ ████  ████ ██      ████   ██    ██
+#  ██ ████ ██ ██    ██ ██ ██  ██ ██    ██ ██ ████ ██ █████   ██ ██  ██    ██
+#  ██  ██  ██ ██    ██ ██  ██ ██ ██    ██ ██  ██  ██ ██      ██  ██ ██    ██
+#  ██      ██  ██████  ██   ████  ██████  ██      ██ ███████ ██   ████    ██
+#
+#
 
 class Monument(Base):
 
@@ -30,9 +46,50 @@ class Monument(Base):
     lon = Column(Float, nullable=False)
     description = Column(String, nullable=False)
     visitors: Mapped[list[User]] = relationship(
-        "User", secondary=association_table, back_populates="visited"
+        "User", secondary=visited_places, back_populates="visited"
     )
 
+def add_new_monument(db: Session, monument: MonumentCreate):
+
+    if check := get_monument_by_name(db, name=monument.name, city=monument.city):
+        return None
+
+    m = Monument(
+        name=monument.name,
+        city=monument.city,
+        country=monument.country,
+        lat=monument.lat,
+        lon=monument.lon,
+        description=monument.description,
+    )
+
+    db.add(m)
+    db.commit()
+    db.refresh(m)
+    return m
+
+def get_monument_by_name(db: Session, name: str, city: str):
+    return db.query(Monument).filter(Monument.name == name).filter(Monument.city == city).first()
+
+def get_monuments_by_city(db: Session, city: str) -> list[Monument]:
+
+    return db.query(Monument).filter(Monument.city == city).all()
+
+def get_monument_by_id(db: Session, id: int) -> Monument:
+
+    return db.query(Monument).filter(Monument.id == id).first()
+
+def get_monuments_by_country(db: Session, country: str) -> list[Monument]:
+
+    return db.query(Monument).filter(Monument.country == country).all()
+
+
+#  ██    ██ ███████ ███████ ██████
+#  ██    ██ ██      ██      ██   ██
+#  ██    ██ ███████ █████   ██████
+#  ██    ██      ██ ██      ██   ██
+#   ██████  ███████ ███████ ██   ██
+#
 
 class User(Base):
     __tablename__ = "users"
@@ -44,12 +101,12 @@ class User(Base):
     score = Column(Integer, default=0)
     picture = Column(LargeBinary)
     visited: Mapped[list[Monument]] = relationship(
-        "Monument", secondary=association_table, back_populates="visitors"
+        "Monument", secondary=visited_places, back_populates="visitors"
     )
 
 def get_user_monuments(db: Session, user_id: int) -> list[Monument] | None:
 
-    return db.query(Monument).join(association_table).filter(association_table.c.user_id == user_id).all()
+    return db.query(Monument).join(visited_places).filter(visited_places.c.user_id == user_id).all()
 
 
 def get_user_by_id(db: Session, user_id: int) -> tuple[User, list[Monument]] | None:
@@ -145,7 +202,6 @@ def update_score(db: Session, user_id: int, score: int) -> User | None:
 # TODO: implement
 def update_picture(db: Session, user_id: int, picture: Any) -> User | None:
     return None
-
 
 
 def insert_new_place(db: Session, user_id: int, place_id: int) -> tuple[User, list[Monument]] | None:

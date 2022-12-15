@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from .general import ResponseSuccess
 
 class MonumentCreate(BaseModel):
 
@@ -33,3 +34,9 @@ class MonumentORM(BaseModel):
 
     class Config:
         orm_mode = True
+
+class ResponseMonuments(ResponseSuccess):
+    monuments: list[MonumentORM]
+
+class ResponseMonument(ResponseSuccess):
+    monument: MonumentORM

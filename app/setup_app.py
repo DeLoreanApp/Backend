@@ -3,7 +3,8 @@ from dotenv import load_dotenv
 load_dotenv()
 from os import environ
 from .db import engine, Base
-from .routers import *
+from . import routers
+from .models import *
 from fastapi.openapi.utils import get_openapi
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -13,7 +14,7 @@ from fastapi.openapi.docs import (
     get_swagger_ui_oauth2_redirect_html,
 )
 
-Base.metadata.drop_all(bind=engine)
+# Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
 
 metadata_tags = [
@@ -29,8 +30,10 @@ app = FastAPI(
     swagger_ui_parameters={"syntaxHighlight.theme": "nord"},
 )
 
-app.include_router(users)
-app.include_router(monuments)
+app.include_router(routers.users)
+app.include_router(routers.monuments)
+app.include_router(routers.map)
+app.include_router(routers.locations)
 
 
 def custom_openapi():

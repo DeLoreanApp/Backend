@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from .setup_app import app
 from .schemas import UserRegister, UserLogin, UserResponse, ResponseError, LeaderBoard
-from .models import user as user_db
+from .models import user_monuments as user_monuments_db
 from .db import SessionLocal
 
 
@@ -32,7 +32,7 @@ def redirect_main_to_docs():
 )
 def login(user: UserLogin, db: Session = Depends(get_db)):
 
-    if user := user_db.auth(db, user):
+    if user := user_monuments_db.auth(db, user):
         return UserResponse(user=user)
 
     return ResponseError(error="User doesn't exists or password is incorrect")
@@ -46,8 +46,8 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
 )
 def register(user: UserRegister, db: Session = Depends(get_db)):
 
-    if not user_db.get_user_by_username(db, user.username):
-        user = user_db.create_user(db, user)
+    if not user_monuments_db.get_user_by_username(db, user.username):
+        user = user_monuments_db.create_user(db, user)
         return UserResponse(user=user)
 
     return ResponseError(error="User already exists")
@@ -55,6 +55,6 @@ def register(user: UserRegister, db: Session = Depends(get_db)):
 @app.get("/leaderboard", response_model=Union[LeaderBoard, ResponseError])
 async def get_leaderbord(db: Session = Depends(get_db)):
 
-    if result := user_db.get_leader_board(db):
+    if result := user_monuments_db.get_leader_board(db):
 
         return LeaderBoard(leaderboard=result)
