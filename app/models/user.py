@@ -101,7 +101,13 @@ def auth(db: Session, user: UserLogin) -> User | None:
 
 def get_leader_board(db: Session) -> list[tuple[int, str]]:
 
-    return db.query(User.username, User.score).filter().order_by(User.score.desc()).limit(30).all()
+    return (
+        db.query(User.username, User.score)
+        .filter()
+        .order_by(User.score.desc())
+        .limit(30)
+        .all()
+    )
 
 
 def update_email(db: Session, user_id: int, email: str) -> User | None:
@@ -112,6 +118,18 @@ def update_email(db: Session, user_id: int, email: str) -> User | None:
         db.refresh(user)
         return user
     return None
+
+
+
+def update_password(db: Session, user_id: int, password: str) -> User | None:
+
+    hash_password = hashpw(password.encode("utf8"), gensalt())
+    if user := db.query(User).filter(User.id == user_id).first():
+        user.hashed_password = hash_password.decode("utf8")
+        db.commit()
+        return user
+    return None
+
 
 
 def update_score(db: Session, user_id: int, score: int) -> User | None:
@@ -127,6 +145,7 @@ def update_score(db: Session, user_id: int, score: int) -> User | None:
 # TODO: implement
 def update_picture(db: Session, user_id: int, picture: Any) -> User | None:
     return None
+
 
 
 def insert_new_place(db: Session, user_id: int, place_id: int) -> tuple[User, list[Monument]] | None:

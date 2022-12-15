@@ -37,6 +37,7 @@ async def get_user(user_id: int, db: Session = Depends(get_db)):
 
 
 @users.put("/{user_id}/email", response_model=Union[UserResponse, ResponseError])
+
 async def update_user_email(
     user_id: int, new_email: EmailStr, db: Session = Depends(get_db)
 ):
@@ -45,6 +46,7 @@ async def update_user_email(
         return UserResponse(user=result)
 
     return ResponseError(error=f"User with {user_id} doesn't exist")
+
 
 
 @users.post(
@@ -56,12 +58,15 @@ async def update_user_places(
     user_id: int, place_id: int, db: Session = Depends(get_db)
 ):
 
+
     user, monuments = user_db.insert_new_place(db, user_id, place_id)
+
 
     if user and monuments:
         return UserResponseFull(user=user, visited=monuments)
 
     return ResponseError(error=f"No user with {user_id=}")
+
 
 
 @users.put(
@@ -81,10 +86,14 @@ async def update_user_picture(user_id: int, picture: UploadFile):
 @users.put("/{user_id}/score", response_model=Union[UserResponse, ResponseError])
 async def update_user_score(user_id: int, score: int, db: Session = Depends(get_db)):
 
+
     if result := user_db.update_score(db, user_id, score):
         return UserResponse(user=result)
 
     return ResponseError(error=f"User with {user_id} doesn't exist")
+
+@users.put("/{user_id}/password", response_model=Union[UserResponse, ResponseError])
+async def update_user_password(user_id: int, password: str, db: Session = Depends(get_db)):
 
 
 @users.get("/leaderboard", response_model=Union[LeaderBoard, ResponseError])
@@ -93,3 +102,4 @@ async def get_leaderbord(db: Session = Depends(get_db)):
     if result := user_db.get_leader_board(db):
 
         return LeaderBoard(leaderboard=result)
+
