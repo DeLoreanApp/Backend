@@ -8,7 +8,7 @@ if db_url := environ.get("DATABASE_URL", None):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://")
     args = {}
 else:
-    DATABASE_URL = "sqlite:///./database.db"
+    DATABASE_URL = "sqlite:///database.db"
     args = {"check_same_thread": False}
 # SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
 

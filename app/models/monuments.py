@@ -1,17 +1,19 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, Float
 from sqlalchemy.orm import Session
+from ..schemas.monuments import MonumentCreate
+from .user import Monument
 
-from ..db import Base
 
+def add_new_monument(db: Session, monument: MonumentCreate):
 
-class Monument(Base):
+    m = Monument(
+        name=monument.name,
+        city=monument.city,
+        country=monument.country,
+        lat=monument.lat,
+        lon=monument.lon,
+        description=monument.description,
+    )
 
-    __tablename__ = "monuments"
+    db.add(m)
+    db.commit()
 
-    id = Column(Integer, primary_key=True, index=True, autoincrement="auto")
-    name = Column(String, nullable=False)
-    city = Column(String, nullable=False)
-    country = Column(String, nullable=False)
-    lat = Column(Float, nullable=False)
-    lon = Column(Float, nullable=False)
-    description = Column(String, nullable=False)

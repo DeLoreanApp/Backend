@@ -30,6 +30,7 @@ app = FastAPI(
 )
 
 app.include_router(users)
+app.include_router(monuments)
 
 
 def custom_openapi():

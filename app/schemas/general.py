@@ -11,3 +11,7 @@ class ResponseError(BaseModel):
 class ResponseSuccess(BaseModel):
 
     status: Literal["success"] = "success"
+
+class NotImplementedResponse(ResponseError):
+
+    error: Literal["Not implemented yet"] = "Not implemented yet"

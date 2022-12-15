@@ -6,12 +6,9 @@ from sqlalchemy.orm import Session
 
 
 from .setup_app import app
-from .schemas import UserRegister, UserLogin, UserResponse, ResponseError
 from .schemas import UserRegister, UserLogin, UserResponse, ResponseError, LeaderBoard
 from .models import user as user_db
 from .db import SessionLocal
-
-
 
 
 def get_db():
