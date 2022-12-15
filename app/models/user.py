@@ -30,7 +30,11 @@ def get_user_by_username(db: Session, username) -> User | None:
 def create_user(db: Session, user: UserRegister):
 
     password = hashpw(user.password.encode("utf8"), gensalt())
-    db_user = User(email=user.email, hashed_password=password.decode("utf8"), username=user.username)
+    db_user = User(
+        email=user.email,
+        hashed_password=password.decode("utf8"),
+        username=user.username,
+    )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -56,7 +60,13 @@ def auth(db: Session, user: UserLogin) -> User | None:
 
 def get_leader_board(db: Session) -> list[tuple[int, str]]:
 
-    return db.query(User.username, User.score).filter().order_by(User.score.desc()).limit(30).all()
+    return (
+        db.query(User.username, User.score)
+        .filter()
+        .order_by(User.score.desc())
+        .limit(30)
+        .all()
+    )
 
 
 def update_email(db: Session, user_id: int, email: str) -> User | None:
@@ -68,6 +78,17 @@ def update_email(db: Session, user_id: int, email: str) -> User | None:
         return user
     return None
 
+
+def update_password(db: Session, user_id: int, password: str) -> User | None:
+
+    hash_password = hashpw(password.encode("utf8"), gensalt())
+    if user := db.query(User).filter(User.id == user_id).first():
+        user.hashed_password = hash_password.decode("utf8")
+        db.commit()
+        return user
+    return None
+
+
 def update_score(db: Session, user_id: int, score: int) -> User | None:
 
     if user := db.query(User).filter(User.id == user_id).first():
@@ -77,9 +98,11 @@ def update_score(db: Session, user_id: int, score: int) -> User | None:
         return user
     return None
 
+
 # TODO: implement
 def update_picture(db: Session, user_id: int, picture: Any) -> User | None:
     return None
+
 
 def insert_new_place(db: Session, user_id: int, place_id: int) -> User | None:
 

@@ -27,35 +27,41 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
     return ResponseError(error=f"No user with {user_id=}")
 
 @users.put("/{user_id}/email", response_model=Union[UserResponse, ResponseError])
-def update_user_email(user_id: int, new_email: EmailStr):
+def update_user_email(user_id: int, new_email: EmailStr, db: Session = Depends(get_db)):
 
-    if result := user_db.update_email(user_id, new_email):
+    if result := user_db.update_email(db, user_id, new_email):
         return UserResponse(user=result)
 
     return ResponseError(error=f"User with {user_id} doesn't exist")
 
 @users.post("/{user_id}/places", response_model=Union[UserResponse, ResponseError], tags=["WIP"])
-def update_user_places(user_id: int, place_id: int):
+def update_user_places(user_id: int, place_id: int, db: Session = Depends(get_db)):
 
-    if result := user_db.insert_new_place(user_id, place_id):
+    if result := user_db.insert_new_place(db, user_id, place_id):
         return UserResponse(user=result)
 
     return ResponseError(error="Not implemented")
 
 @users.put("/{user_id}/picture", response_model=Union[UserResponse, ResponseError], tags=["WIP"])
-def update_user_picture(user_id: int, picture: Any):
+def update_user_picture(user_id: int, picture: Any, db: Session = Depends(get_db)):
 
-    if result := user_db.update_picture(user_id, picture):
+    if result := user_db.update_picture(db, user_id, picture):
         return UserResponse(user=result)
 
     return ResponseError(error="Not implemented")
 
 @users.put("/{user_id}/score", response_model=Union[UserResponse, ResponseError])
-def update_user_score(user_id: int, score: int):
+def update_user_score(user_id: int, score: int, db: Session = Depends(get_db)):
 
-    if result := user_db.update_score(user_id, score):
+    if result := user_db.update_score(db, user_id, score):
         return UserResponse(user=result)
 
     return ResponseError(error=f"User with {user_id} doesn't exist")
 
+@users.put("/{user_id}/password", response_model=Union[UserResponse, ResponseError])
+async def update_user_password(user_id: int, password: str, db: Session = Depends(get_db)):
 
+    if result := user_db.update_password(db, user_id, password):
+        return UserResponse(user=result)
+
+    return ResponseError(error=f"User with {user_id} doesn't exist")
