@@ -7,7 +7,7 @@ from ..schemas.monuments import MonumentCreate
 from ..models.monuments import add_new_monument
 from ..db import SessionLocal
 
-monuments = APIRouter(prefix="/monuments", tags=["user"])
+monuments = APIRouter(prefix="/monument", tags=["monument"])
 
 
 async def get_db():

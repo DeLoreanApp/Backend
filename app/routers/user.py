@@ -95,11 +95,16 @@ async def update_user_score(user_id: int, score: int, db: Session = Depends(get_
 @users.put("/{user_id}/password", response_model=Union[UserResponse, ResponseError])
 async def update_user_password(user_id: int, password: str, db: Session = Depends(get_db)):
 
+    if result := user_db.update_password(db, user_id, password):
+        return UserResponse(user=result)
 
-@users.get("/leaderboard", response_model=Union[LeaderBoard, ResponseError])
-async def get_leaderbord(db: Session = Depends(get_db)):
+    return ResponseError(error=f"User with {user_id} doesn't exist")
 
-    if result := user_db.get_leader_board(db):
 
-        return LeaderBoard(leaderboard=result)
+# @users.get("/leaderboard", response_model=Union[LeaderBoard, ResponseError])
+# async def get_leaderbord(db: Session = Depends(get_db)):
+#
+#     if result := user_db.get_leader_board(db):
+#
+#         return LeaderBoard(leaderboard=result)
 
