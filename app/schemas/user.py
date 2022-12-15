@@ -42,3 +42,14 @@ class UserFull(UserMinimal):
 
 class UserResponse(ResponseSuccess):
     user: UserFull
+class LeaderBoardEntry(BaseModel):
+
+    username: str
+    score: int
+
+    class Config:
+        orm_mode = True
+
+class LeaderBoard(BaseModel):
+    leaderboard: list[LeaderBoardEntry]
+

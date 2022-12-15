@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from .setup_app import app
 from .schemas import UserRegister, UserLogin, UserResponse, ResponseError
+from .schemas import UserRegister, UserLogin, UserResponse, ResponseError, LeaderBoard
 from .models import user as user_db
 from .db import SessionLocal
 
@@ -53,3 +54,10 @@ def register(user: UserRegister, db: Session = Depends(get_db)):
         return UserResponse(user=user)
 
     return ResponseError(error="User already exists")
+
+@app.get("/leaderboard", response_model=Union[LeaderBoard, ResponseError])
+async def get_leaderbord(db: Session = Depends(get_db)):
+
+    if result := user_db.get_leader_board(db):
+
+        return LeaderBoard(leaderboard=result)
