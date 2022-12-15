@@ -54,7 +54,6 @@ def auth(db: Session, user: UserLogin) -> User | None:
     return None
 
 
-def get_leader_board(db: Session) -> list[User]:
 def get_leader_board(db: Session) -> list[tuple[int, str]]:
 
     return db.query(User.username, User.score).filter().order_by(User.score.desc()).limit(30).all()
