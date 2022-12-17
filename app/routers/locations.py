@@ -4,11 +4,11 @@ from sqlalchemy.orm import Session
 
 from app.schemas.general import ResponseError
 from app.schemas.location import Location, ResponseLocation
-from app.schemas.map import MapORM, ResponseMapORM
 from ..db import SessionLocal
-from ..models import user_monuments as u_m_db, locations as loc_db
+from ..models import locations as loc_db
 
 locations = APIRouter(prefix="/location", tags=["locations"])
+
 
 async def get_db():
     db = SessionLocal()
@@ -17,6 +17,7 @@ async def get_db():
     finally:
         db.close()
 
+
 @locations.put("/", response_model=Union[ResponseLocation, ResponseError])
 def add_location(location: Location, db: Session = Depends(get_db)):
 
@@ -24,5 +25,3 @@ def add_location(location: Location, db: Session = Depends(get_db)):
         return ResponseLocation(location=result)
 
     return ResponseError(error="Location already exists")
-
-

@@ -19,7 +19,7 @@ class Location(Base):
 
 def add_location(db: Session, location: s_loc.Location):
 
-    if check := get_location_name(db, location_name=location.location_name, city=location.city):
+    if get_location_name(db, location_name=location.location_name, city=location.city):
         return None
 
     l = Location(
@@ -43,7 +43,12 @@ def get_location_id(db: Session, location_id: int) -> Location | None:
 
 
 def get_location_name(db: Session, location_name: str, city: str) -> Location | None:
-    return db.query(Location).filter(Location.location_name == location_name).filter(Location.city == city).first()
+    return (
+        db.query(Location)
+        .filter(Location.location_name == location_name)
+        .filter(Location.city == city)
+        .first()
+    )
 
 
 def get_longitude(db: Session, longitude: float) -> Location | None:

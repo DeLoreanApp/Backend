@@ -39,12 +39,15 @@ class UserFull(UserMinimal):
 
     visited: list[Monument] | None = Field(default=None, alias="last_visited_monuments")
 
+
 class UserResponse(ResponseSuccess):
     user: UserFull
+
 
 class UserResponseFull(ResponseSuccess):
     user: UserMinimal
     visited: list[MonumentORM] | None = Field(default=None)
+
 
 class LeaderBoardEntry(BaseModel):
 
@@ -54,6 +57,6 @@ class LeaderBoardEntry(BaseModel):
     class Config:
         orm_mode = True
 
+
 class LeaderBoard(BaseModel):
     leaderboard: list[LeaderBoardEntry]
-

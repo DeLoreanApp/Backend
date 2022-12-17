@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from .general import ResponseSuccess
 
+
 class Location(BaseModel):
 
     location_name: str
@@ -10,6 +11,7 @@ class Location(BaseModel):
     location_description: str
     city: str
     country: str
+
 
 class LocationORM(BaseModel):
     location_id: int
@@ -24,9 +26,11 @@ class LocationORM(BaseModel):
     class Config:
         orm_mode = True
 
+
 class ResponseLocation(ResponseSuccess):
 
     location: LocationORM
+
 
 class ResponseLocations(ResponseSuccess):
 

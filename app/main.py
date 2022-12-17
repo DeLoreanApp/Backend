@@ -52,6 +52,7 @@ def register(user: UserRegister, db: Session = Depends(get_db)):
 
     return ResponseError(error="User already exists")
 
+
 @app.get("/leaderboard", response_model=Union[LeaderBoard, ResponseError])
 async def get_leaderbord(db: Session = Depends(get_db)):
 

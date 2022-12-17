@@ -25,7 +25,6 @@ visited_places = Table(
 )
 
 
-
 #  ███    ███  ██████  ███    ██ ██    ██ ███    ███ ███████ ███    ██ ████████
 #  ████  ████ ██    ██ ████   ██ ██    ██ ████  ████ ██      ████   ██    ██
 #  ██ ████ ██ ██    ██ ██ ██  ██ ██    ██ ██ ████ ██ █████   ██ ██  ██    ██
@@ -33,6 +32,7 @@ visited_places = Table(
 #  ██      ██  ██████  ██   ████  ██████  ██      ██ ███████ ██   ████    ██
 #
 #
+
 
 class Monument(Base):
 
@@ -49,9 +49,10 @@ class Monument(Base):
         "User", secondary=visited_places, back_populates="visited"
     )
 
+
 def add_new_monument(db: Session, monument: MonumentCreate):
 
-    if check := get_monument_by_name(db, name=monument.name, city=monument.city):
+    if get_monument_by_name(db, name=monument.name, city=monument.city):
         return None
 
     m = Monument(
@@ -68,16 +69,25 @@ def add_new_monument(db: Session, monument: MonumentCreate):
     db.refresh(m)
     return m
 
+
 def get_monument_by_name(db: Session, name: str, city: str):
-    return db.query(Monument).filter(Monument.name == name).filter(Monument.city == city).first()
+    return (
+        db.query(Monument)
+        .filter(Monument.name == name)
+        .filter(Monument.city == city)
+        .first()
+    )
+
 
 def get_monuments_by_city(db: Session, city: str) -> list[Monument]:
 
     return db.query(Monument).filter(Monument.city == city).all()
 
+
 def get_monument_by_id(db: Session, id: int) -> Monument:
 
     return db.query(Monument).filter(Monument.id == id).first()
+
 
 def get_monuments_by_country(db: Session, country: str) -> list[Monument]:
 
@@ -90,6 +100,7 @@ def get_monuments_by_country(db: Session, country: str) -> list[Monument]:
 #  ██    ██      ██ ██      ██   ██
 #   ██████  ███████ ███████ ██   ██
 #
+
 
 class User(Base):
     __tablename__ = "users"
@@ -104,9 +115,15 @@ class User(Base):
         "Monument", secondary=visited_places, back_populates="visitors"
     )
 
+
 def get_user_monuments(db: Session, user_id: int) -> list[Monument] | None:
 
-    return db.query(Monument).join(visited_places).filter(visited_places.c.user_id == user_id).all()
+    return (
+        db.query(Monument)
+        .join(visited_places)
+        .filter(visited_places.c.user_id == user_id)
+        .all()
+    )
 
 
 def get_user_by_id(db: Session, user_id: int) -> tuple[User, list[Monument]] | None:
@@ -115,6 +132,7 @@ def get_user_by_id(db: Session, user_id: int) -> tuple[User, list[Monument]] | N
     monuments = get_user_monuments(db, user_id)
 
     return user, monuments
+
 
 def check_user_by_id(db: Session, user_id: int) -> User | None:
     return db.query(User).filter(User.id == user_id).first()
@@ -177,7 +195,6 @@ def update_email(db: Session, user_id: int, email: str) -> User | None:
     return None
 
 
-
 def update_password(db: Session, user_id: int, password: str) -> User | None:
 
     hash_password = hashpw(password.encode("utf8"), gensalt())
@@ -186,7 +203,6 @@ def update_password(db: Session, user_id: int, password: str) -> User | None:
         db.commit()
         return user
     return None
-
 
 
 def update_score(db: Session, user_id: int, score: int) -> User | None:
@@ -204,7 +220,9 @@ def update_picture(db: Session, user_id: int, picture: Any) -> User | None:
     return None
 
 
-def insert_new_place(db: Session, user_id: int, place_id: int) -> tuple[User, list[Monument]] | None:
+def insert_new_place(
+    db: Session, user_id: int, place_id: int
+) -> tuple[User, list[Monument]] | None:
 
     m = db.query(Monument).filter(Monument.id == place_id).first()
 
@@ -214,4 +232,3 @@ def insert_new_place(db: Session, user_id: int, place_id: int) -> tuple[User, li
     db.commit()
 
     return get_user_by_id(db, user_id)
-

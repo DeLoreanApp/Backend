@@ -9,12 +9,14 @@ from ..models import user_monuments as u_m_db, locations as loc_db
 
 map = APIRouter(prefix="/map", tags=["map"])
 
+
 async def get_db():
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
+
 
 @map.get("/{city}", response_model=Union[ResponseMapORM, ResponseError])
 def get_all_locations_by_city(city: str, db: Session = Depends(get_db)):
