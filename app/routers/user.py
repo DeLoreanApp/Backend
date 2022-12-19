@@ -28,7 +28,7 @@ async def get_user(user_id: int, db: Session = Depends(get_db)):
 
     user, monuments = user_monuments_db.get_user_by_id(db, user_id)
 
-    if user and monuments:
+    if user:
         return UserResponseFull(user=user, visited=monuments)
 
     return ResponseError(error=f"No user with {user_id=}")
