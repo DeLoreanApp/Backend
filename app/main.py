@@ -64,5 +64,5 @@ async def get_leaderbord(db: Session = Depends(get_db)):
 
         return LeaderBoard(leaderboard=result)
 
-    return ResponseError(error="Unknown error")
+    return LeaderBoard(leaderboard=[])
 
