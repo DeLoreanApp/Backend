@@ -35,13 +35,8 @@ class UserMinimal(BaseModel):
         allow_population_by_field_name = True
 
 
-class UserFull(UserMinimal):
-
-    visited: list[Monument] | None = Field(default=None, alias="last_visited_monuments")
-
-
 class UserResponse(ResponseSuccess):
-    user: UserFull
+    user: UserMinimal
 
 
 class UserResponseFull(ResponseSuccess):

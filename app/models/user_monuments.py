@@ -154,7 +154,7 @@ def create_user(db: Session, user: UserRegister):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    return db_user
+    return db_user, None
 
 
 def auth(db: Session, user: UserLogin) -> User | None:
@@ -166,12 +166,13 @@ def auth(db: Session, user: UserLogin) -> User | None:
         user_db = db.query(User).filter(User.username == user.email_or_username).first()
 
     if not user_db:
-        return None
+        return None, None
 
     if checkpw(user.password.encode("utf8"), user_db.hashed_password.encode("utf8")):
-        return user_db
+        monuments = get_user_monuments(db, user_db.id)
+        return user_db, monuments
 
-    return None
+    return None, None
 
 
 def get_leader_board(db: Session) -> list[tuple[int, str]]:

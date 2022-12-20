@@ -42,8 +42,8 @@ def get_monuments_by_country(country: str, db: Session = Depends(get_db)):
 
 
 @monuments.get("/{id}", response_model=Union[ResponseMonument, ResponseError])
-def get_monument_by_id(id: str, db: Session = Depends(get_db)):
-    if result := u_m_db.get_monumet_by_id(db, id):
+def get_monument_by_id(id: int, db: Session = Depends(get_db)):
+    if result := u_m_db.get_monument_by_id(db, id):
         return ResponseMonument(monument=result)
 
     return ResponseError(error=f"No such monument with id={id}")

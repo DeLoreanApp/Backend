@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 
 from .setup_app import app
-from .schemas import UserRegister, UserLogin, UserResponse, ResponseError, LeaderBoard
+from .schemas import UserRegister, UserLogin, UserResponse, ResponseError, LeaderBoard, UserResponseFull
 from .models import user_monuments as user_monuments_db
 from .db import SessionLocal
 
@@ -26,16 +26,16 @@ def redirect_main_to_docs():
 
 @app.post(
     "/login",
-    response_model=Union[UserResponse, ResponseError],
+    response_model=Union[UserResponseFull, ResponseError],
     response_model_by_alias=True,
     tags=["user"],
 )
 def login(user: UserLogin, db: Session = Depends(get_db)):
+    user, monuments = user_monuments_db.auth(db, user)
+    if user:
+        return UserResponseFull(user=user, monuments=monuments)
 
-    if user := user_monuments_db.auth(db, user):
-        return UserResponse(user=user)
-
-    return ResponseError(error="User doesn't exists or password is incorrect")
+    return ResponseError(error="User doesn't exist or password is incorrect")
 
 
 @app.post(
@@ -59,3 +59,6 @@ async def get_leaderbord(db: Session = Depends(get_db)):
     if result := user_monuments_db.get_leader_board(db):
 
         return LeaderBoard(leaderboard=result)
+
+    return ResponseError(error="Unknown error")
+
