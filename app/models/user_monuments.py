@@ -142,6 +142,9 @@ def get_user_by_username(db: Session, username) -> User | None:
 
     return db.query(User).filter(User.username == username).first()
 
+def get_user_by_email(db: Session, email) -> User | None:
+
+    return db.query(User).filter(User.email == email).first()
 
 def create_user(db: Session, user: UserRegister):
 

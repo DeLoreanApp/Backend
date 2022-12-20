@@ -46,11 +46,15 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
 )
 def register(user: UserRegister, db: Session = Depends(get_db)):
 
-    if not user_monuments_db.get_user_by_username(db, user.username):
-        user = user_monuments_db.create_user(db, user)
-        return UserResponse(user=user)
+    if user_monuments_db.get_user_by_username(db, user.username):
+        return ResponseError(error="Username already exists")
 
-    return ResponseError(error="User already exists")
+    if user_monuments_db.get_user_by_email(db, user.email):
+        return ResponseError(error="Email already exists")
+
+
+    user = user_monuments_db.create_user(db, user)
+    return UserResponse(user=user)
 
 
 @app.get("/leaderboard", response_model=Union[LeaderBoard, ResponseError])
