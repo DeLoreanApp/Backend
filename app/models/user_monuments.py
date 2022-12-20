@@ -154,7 +154,7 @@ def create_user(db: Session, user: UserRegister):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    return db_user, None
+    return db_user
 
 
 def auth(db: Session, user: UserLogin) -> User | None:
